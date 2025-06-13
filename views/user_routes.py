@@ -7,7 +7,7 @@ from models.user_model import User as UserDB
 router = APIRouter()
 
 @router.post("/")
-def create(user: UserCreate):
+def create(user: UserCreate, current_user: UserDB = Depends(get_current_user)):
     return create_user(user)
 
 @router.get("/{user_id}")

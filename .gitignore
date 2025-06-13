@@ -1,0 +1,5 @@
+# Ignora todas as pastas __pycache__ em qualquer nível
+**/__pycache__/
+
+# (Opcional) Ignora arquivos compilados Python
+**/*.py[cod]

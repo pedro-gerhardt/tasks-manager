@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from database import Base
 
 # SQLAlchemy Model
 class Task(Base):
