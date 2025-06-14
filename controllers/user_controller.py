@@ -1,14 +1,7 @@
 from fastapi import HTTPException
 from models.user_model import User, UserCreate, UserUpdate
-from database import SessionLocal
 from sqlalchemy.orm import Session
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from controllers.utils import get_db
 
 def create_user(user: UserCreate):
     db: Session = next(get_db())

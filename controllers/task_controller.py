@@ -1,14 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.task_model import Task, TaskCreate, TaskUpdate
-from database import SessionLocal
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from controllers.utils import get_db
 
 def create_task(task: TaskCreate):
     db: Session = next(get_db())
