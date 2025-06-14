@@ -2,6 +2,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.task_model import Task, TaskCreate, TaskUpdate
 from controllers.utils import get_db
+from typing import Optional
+from datetime import date
+from sqlalchemy import and_
+
 
 def create_task(task: TaskCreate):
     db: Session = next(get_db())
@@ -40,3 +44,30 @@ def delete_task(task_id: int):
     db.delete(task)
     db.commit()
     return {"message": "Task deleted"}
+
+def list_tasks_filtered(
+    status: Optional[str] = None,
+    priority: Optional[str] = None,
+    due_before: Optional[date] = None,
+    user_id: Optional[int] = None,
+):
+    db: Session = next(get_db())
+
+    query = db.query(Task)
+
+    filters = []
+
+    if status:
+        filters.append(Task.status == status)
+    if priority:
+        filters.append(Task.priority == priority)
+    if due_before:
+        filters.append(Task.due_date != None)
+        filters.append(Task.due_date < due_before)
+    if user_id:
+        filters.append(Task.assigned_to == user_id)
+
+    if filters:
+        query = query.filter(and_(*filters))
+
+    return query.order_by(Task.due_date).all()
