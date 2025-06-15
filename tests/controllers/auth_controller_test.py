@@ -1,6 +1,7 @@
 from src.controllers.auth_controller import login_user
 from src.models.user_model import UserLogin
 from fastapi import HTTPException
+from passlib.hash import bcrypt
 
 def test_login_user_success(create_test_user):
     credentials = UserLogin(email=create_test_user.email, password="1234")

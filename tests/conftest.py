@@ -6,8 +6,8 @@ from fastapi.testclient import TestClient
 from src.main import app
 from src.database import Base, engine, SessionLocal
 from sqlalchemy.orm import Session
-from src.models import user_model, task_model, comment_model
-# from passlib.hash import bcrypt
+from src.models.user_model import User
+from passlib.hash import bcrypt
 
 SECRET_KEY = os.getenv("JWT_SECRET", "supersecret")
 ALGORITHM = "HS256"
@@ -29,8 +29,12 @@ def client():
 
 @pytest.fixture(scope="session")
 def create_test_user(db):
-    # cria um usuário e autentica
-    db_user = user_model.User(name="tester", email="tester@tester.com", password="1234")
+    db_user = User(
+        name="Test User",
+        email="testuser@example.com",
+        hashed_password=bcrypt.hash("1234"),
+        is_active=True
+    )
     db.add
     db.add(db_user)
     db.commit()

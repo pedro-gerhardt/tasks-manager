@@ -4,13 +4,15 @@ from src.database import SessionLocal
 import jwt
 import os
 from datetime import datetime, timedelta, UTC
+from passlib.hash import bcrypt
+
 
 SECRET_KEY = os.getenv("JWT_SECRET", "supersecret")
 
 def login_user(credentials: UserLogin):
     db = SessionLocal()
     user = db.query(User).filter(User.email == credentials.email).first()
-    if not user or not credentials.password == user.password:  # Assuming password is stored in plain text for simplicity
+    if not user or not bcrypt.verify(credentials.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     payload = {
         "sub": str(user.id),

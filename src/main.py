@@ -4,6 +4,8 @@ from src.views import user_routes, task_routes, auth_routes, comment_routes
 from sqlalchemy.orm import Session
 from src.controllers.utils import get_db
 from src.models.user_model import User
+from passlib.hash import bcrypt
+
 
 app = FastAPI(title="Gestão de Tarefas")
 
@@ -16,7 +18,7 @@ app.include_router(comment_routes.router, tags=["Comments"])
 
 db: Session = next(get_db())
 if db.query(User).filter_by(email="root@root.com").count() < 1:
-    db_user = User(name="root", email="root@root.com", password="root")
+    db_user = User(name="root", email="root@root.com", hashed_password = bcrypt.hash("root"))
     db.add
     db.add(db_user)
     db.commit()

@@ -2,9 +2,11 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.models.user_model import User, UserCreate, UserUpdate
 from src.controllers.utils import get_db
+from passlib.hash import bcrypt
 
 def create_user(user: UserCreate, db: Session):
-    db_user = User(name=user.name, email=user.email, password=user.password)
+    hashed_pw = bcrypt.hash(user.password)
+    db_user = User(name=user.name, email=user.email, hashed_password=hashed_pw)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -25,7 +27,7 @@ def update_user(user_id: int, data: UserUpdate, db: Session):
     if data.email:
         user.email = data.email
     if data.password:
-        user.password = data.password
+        user.hashed_password = bcrypt.hash(data.password)
     db.commit()
     db.refresh(user)
     return user
