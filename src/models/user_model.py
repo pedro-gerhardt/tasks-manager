@@ -26,3 +26,12 @@ class UserUpdate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+    is_active: bool
+
+    class Config:
+        orm_mode = True

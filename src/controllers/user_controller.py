@@ -30,6 +30,7 @@ def update_user(user_id: int, data: UserUpdate):
     if data.password:
         user.password = data.password
     db.commit()
+    db.refresh(user)
     return user
 
 def delete_user(user_id: int):
