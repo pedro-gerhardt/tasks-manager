@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
-from models.user_model import User
-from database import SessionLocal
+from src.models.user_model import User
+from src.database import SessionLocal
 import os
 
 SECRET_KEY = os.getenv("JWT_SECRET", "supersecret")

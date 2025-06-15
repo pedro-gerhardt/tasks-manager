@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
-from database import Base
+from src.database import Base
 from datetime import date
 
 # SQLAlchemy Model

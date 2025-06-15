@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models.task_model import Task, TaskCreate, TaskUpdate
-from controllers.utils import get_db
+from src.models.task_model import Task, TaskCreate, TaskUpdate
+from src.controllers.utils import get_db
 from typing import Optional
 from datetime import date
 from sqlalchemy import and_

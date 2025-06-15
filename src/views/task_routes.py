@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Query, Depends
-from controllers.task_controller import (
+from src.controllers.task_controller import (
     create_task, get_task, list_tasks_by_user,
     update_task, delete_task, list_tasks_filtered
 )
-from models.task_model import TaskCreate, TaskUpdate
-from auth.jwt_utils import get_current_user
-from models.user_model import User as UserDB
+from src.models.task_model import TaskCreate, TaskUpdate
+from src.auth.jwt_utils import get_current_user
+from src.models.user_model import User as UserDB
 from datetime import date
 
 router = APIRouter()

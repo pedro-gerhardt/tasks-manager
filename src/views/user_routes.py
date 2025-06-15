@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
-from controllers.user_controller import *
-from models.user_model import UserCreate, UserUpdate
-from auth.jwt_utils import get_current_user
-from models.user_model import User as UserDB
+from src.controllers.user_controller import *
+from src.models.user_model import UserCreate, UserUpdate
+from src.auth.jwt_utils import get_current_user
+from src.models.user_model import User as UserDB
 
 router = APIRouter()
 

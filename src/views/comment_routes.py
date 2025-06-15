@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
-from controllers.comment_controller import create_comment, list_comments, delete_comment
-from models.comment_model import Comment, CommentCreate
-from auth.jwt_utils import get_current_user
-from models.user_model import User as UserDB
+from src.controllers.comment_controller import create_comment, list_comments, delete_comment
+from src.models.comment_model import Comment, CommentCreate
+from src.auth.jwt_utils import get_current_user
+from src.models.user_model import User as UserDB
 
 router = APIRouter()
 

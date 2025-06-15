@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from database import Base
+from src.database import Base
 
 # SQLAlchemy
 class Comment(Base):

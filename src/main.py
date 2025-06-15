@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from database import Base, engine
-from views import user_routes, task_routes, auth_routes, comment_routes
+from src.database import Base, engine
+from src.views import user_routes, task_routes, auth_routes, comment_routes
 from sqlalchemy.orm import Session
-from controllers.utils import get_db
-from models.user_model import User
+from src.controllers.utils import get_db
+from src.models.user_model import User
 
 app = FastAPI(title="Gestão de Tarefas")
 

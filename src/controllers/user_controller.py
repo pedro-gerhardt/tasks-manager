@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from models.user_model import User, UserCreate, UserUpdate
 from sqlalchemy.orm import Session
-from controllers.utils import get_db
+from src.models.user_model import User, UserCreate, UserUpdate
+from src.controllers.utils import get_db
 
 def create_user(user: UserCreate):
     db: Session = next(get_db())

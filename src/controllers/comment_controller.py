@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models.comment_model import Comment, CommentCreate
-from controllers.utils import get_db
+from src.models.comment_model import Comment, CommentCreate
+from src.controllers.utils import get_db
 
 def create_comment(task_id: int, user_id: int, comment_data: CommentCreate):
     db: Session = next(get_db())
