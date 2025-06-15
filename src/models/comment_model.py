@@ -16,3 +16,10 @@ class Comment(Base):
 # Pydantic Schemas
 class CommentCreate(BaseModel):
     content: str
+
+class CommentOut(BaseModel):
+    id: int
+    created_at: datetime
+    content: str
+    class ConfigDict:
+        orm_mode = True

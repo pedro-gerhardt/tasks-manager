@@ -12,7 +12,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(user_routes.router, prefix="/users", tags=["Users"])
 app.include_router(task_routes.router, prefix="/tasks", tags=["Tasks"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Auth"])
-app.include_router(comment_routes.router, prefix="/comments", tags=["Comments"])
+app.include_router(comment_routes.router, tags=["Comments"])
 
 db: Session = next(get_db())
 if db.query(User).filter_by(email="root@root.com").count() < 1:

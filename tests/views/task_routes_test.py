@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-def test_create_task_route(client, auth_token, db):
+def test_create_task_route(client, auth_token):
     response = client.post(
         "/tasks/",
         json={
