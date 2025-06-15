@@ -20,6 +20,7 @@ class TaskCreate(BaseModel):
     title: str
     description: str | None = None
     assigned_to: int | None = None
+    status: str | None = None
     priority: str = "medium"
     due_date: date | None = None
 
@@ -30,3 +31,16 @@ class TaskUpdate(BaseModel):
     assigned_to: int | None = None
     priority: str | None = None
     due_date: date | None = None
+
+
+class TaskOut(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    status: str
+    priority: str
+    due_date: date | None
+    assigned_to: int | None
+
+    class ConfigDict:
+        orm_mode = True

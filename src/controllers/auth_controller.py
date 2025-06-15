@@ -3,7 +3,7 @@ from src.models.user_model import UserLogin, User
 from src.database import SessionLocal
 import jwt
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 SECRET_KEY = os.getenv("JWT_SECRET", "supersecret")
 
@@ -14,7 +14,7 @@ def login_user(credentials: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     payload = {
         "sub": str(user.id),
-        "exp": datetime.now() + timedelta(hours=2)
+        "exp": datetime.now(UTC) + timedelta(hours=2)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
     return {"access_token": token, "token_type": "bearer"}

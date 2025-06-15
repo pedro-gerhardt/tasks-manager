@@ -33,5 +33,5 @@ class UserOut(BaseModel):
     email: str
     is_active: bool
 
-    class Config:
+    class ConfigDict:
         orm_mode = True

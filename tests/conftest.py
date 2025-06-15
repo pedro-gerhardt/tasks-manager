@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import jwt
 import os
 from fastapi.testclient import TestClient
@@ -41,7 +41,7 @@ def create_test_user(db):
 def auth_token(create_test_user, db):
     payload = {
         "sub": str(create_test_user.id),
-        "exp": datetime.utcnow() + timedelta(hours=1)
+        "exp": datetime.now(UTC) + timedelta(hours=1)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token

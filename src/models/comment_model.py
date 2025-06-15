@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from src.database import Base
@@ -11,7 +11,7 @@ class Comment(Base):
     content = Column(String, nullable=False)
     task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(UTC))
 
 # Pydantic Schemas
 class CommentCreate(BaseModel):
