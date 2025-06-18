@@ -222,5 +222,4 @@ pytest --cov=src tests/
 
 ## Licença
 
-MIT © Seu Nome
-Patrick Borges Wendling e Pedro Lucas Erig Gerhardt
+MIT © Patrick Borges Wendling e Pedro Lucas Erig Gerhardt
