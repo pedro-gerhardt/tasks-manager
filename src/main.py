@@ -1,3 +1,4 @@
+import os
 import logging.config
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
@@ -8,6 +9,9 @@ from src.controllers.utils import get_db
 from src.models.user_model import User
 from passlib.hash import bcrypt
 from src.views import user_routes, task_routes, auth_routes, comment_routes
+
+# Garante que a pasta de logs exista antes de criar o handler de arquivo
+os.makedirs("logs", exist_ok=True)
 
 # --- Configuração de logging com rotação de arquivos ---
 LOGGING_CONFIG = {
