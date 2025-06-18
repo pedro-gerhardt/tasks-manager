@@ -202,6 +202,12 @@ pytest --maxfail=1 --disable-warnings -q
 
 Testes de controllers, modelos e rotas estão em `tests/`.
 
+Para verificar a cobertura e demais testes execute:
+
+```bash
+pytest --cov=src tests/
+```
+
 ---
 
 ## Contribuição
