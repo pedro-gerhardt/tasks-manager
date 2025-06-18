@@ -103,7 +103,6 @@ Comments
   ├─ user_id (FK → users.id)
   └─ created_at (datetime)
 ```
-```
 
 ### Descrição das tabelas
 
