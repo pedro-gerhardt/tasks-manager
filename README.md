@@ -77,32 +77,31 @@ Para organizar o código de forma clara e escalável, adotamos o **padrão MVC (
 Entidades principais e seus relacionamentos:
 
 ```
-Users
-  ├─ id (PK, int)
-  ├─ name (str)
-  ├─ email (str, unique)
-  ├─ hashed_password (str)
-  ├─ is_active (bool)
-  └─ created_at (datetime)
-
-Tasks
-  ├─ id (PK, int)
-  ├─ title (str)
-  ├─ description (str, opcional)
-  ├─ due_date (date, opcional)
-  ├─ priority (enum: low, medium, high)
-  ├─ status (enum: pending, in_progress, done)
-  ├─ assigned_to (FK → users.id, opcional)
-  ├─ created_at (datetime)
-  └─ updated_at (datetime)
-
-Comments
-  ├─ id (PK, int)
-  ├─ content (str)
-  ├─ task_id (FK → tasks.id)
-  ├─ user_id (FK → users.id)
-  └─ created_at (datetime)
++-----------+     +-----------+     +-------------+
+|   Users   |     |   Tasks   |     |  Comments   |
++-----------+     +-----------+     +-------------+
+| id        |◄──┐ | id        |     | id          |
+| name      |   └─┤ title     |     | content     |
+| email     |     | description (opt)| task_id   |
+| hashed_pw |     | due_date (opt) | user_id     |
+| is_active |     | priority        | created_at |
+| created_at|     | status          |             |
++-----------+     | assigned_to (opt)|            |
+                  | created_at      |            |
+                  | updated_at      |            |
+                  +-----------+     +-------------+
 ```
+
+### Descrição das tabelas
+
+- **Users**:  
+  Tabela de usuários do sistema. Armazena `id`, `name`, `email` (único), senha hash (`hashed_password`), status (`is_active`) e timestamp de criação (`created_at`).  
+
+- **Tasks**:  
+  Tarefas criadas pelos usuários. Cada registro contém `id`, título (`title`), descrição opcional, data de vencimento (`due_date`), prioridade (`priority`), status (`status`), referência ao usuário responsável (`assigned_to`), além de timestamps de criação e atualização.  
+
+- **Comments**:  
+  Comentários feitos em tarefas. Cada comentário possui `id`, texto (`content`), referência à `task_id`, referência ao autor (`user_id`) e timestamp de criação (`created_at`).  
 
 ---
 
