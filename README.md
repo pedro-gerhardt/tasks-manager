@@ -60,8 +60,35 @@ Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQL
 ## Pré-requisitos
 
 - Git  
-- Python 3.10+  
-- (Opcional) virtualenv ou conda  
+- Python 3.10+ 
+
+---
+
+## Dependências
+
+Instale as bibliotecas necessárias via pip:
+
+```bash
+pip install fastapi uvicorn sqlalchemy pydantic passlib[bcrypt] PyJWT pytest
+```
+
+Se preferir, crie um arquivo `requirements.txt` com:
+
+```
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+passlib[bcrypt]
+PyJWT
+pytest
+```
+
+E instale com:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
@@ -73,14 +100,7 @@ Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQL
    cd tasks-manager
    ```
 
-2. Crie e ative um ambiente virtual:  
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate    # Linux/macOS
-   .venv\Scripts\activate     # Windows
-   ```
-
-3. Instale as dependências:  
+2. Instale as dependências:  
    ```bash
    pip install -r requirements.txt
    ```
@@ -101,7 +121,7 @@ Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQL
 ## Execução
 
 ```bash
-uvicorn src.main:app --reload
+python -m src.main
 ```
 
 O servidor ficará disponível em `http://127.0.0.1:8000`.
