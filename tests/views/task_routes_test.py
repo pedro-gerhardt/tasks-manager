@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 def test_create_task_route(client, auth_token):
-    response = client.post(
+    r = client.post(
         "/tasks/",
         json={
             "title": "Via Rota",
@@ -12,54 +12,45 @@ def test_create_task_route(client, auth_token):
         },
         headers={"Authorization": f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["title"] == "Via Rota"
+    assert r.status_code == 201  # criação via POST deve ser 201 Created
+    body = r.json()
+    assert body["title"] == "Via Rota"
+    assert "id" in body
 
 def test_get_task_route(client, auth_token):
-    created = client.post(
+    crt = client.post(
         "/tasks/",
         json={"title": "Get Task", "assigned_to": 1},
         headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    task_id = created["id"]
-
-    response = client.get(
-        f"/tasks/{task_id}",
-        headers={"Authorization": f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["title"] == "Get Task"
+    assert crt.status_code == 201
+    tid = crt.json()["id"]
+
+    r = client.get(f"/tasks/{tid}", headers={"Authorization": f"Bearer {auth_token}"})
+    assert r.status_code == 200
+    assert r.json()["title"] == "Get Task"
 
 def test_update_task_route(client, auth_token):
-    created = client.post(
-        "/tasks/",
-        json={"title": "To Update", "assigned_to": 1},
-        headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    task_id = created["id"]
+    crt = client.post("/tasks/", json={"title": "To Update", "assigned_to": 1},
+                      headers={"Authorization": f"Bearer {auth_token}"})
+    tid = crt.json()["id"]
 
-    response = client.put(
-        f"/tasks/{task_id}",
+    r = client.put(
+        f"/tasks/{tid}",
         json={"title": "Atualizado"},
         headers={"Authorization": f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["title"] == "Atualizado"
+    assert r.status_code == 200
+    assert r.json()["title"] == "Atualizado"
 
 def test_delete_task_route(client, auth_token):
-    created = client.post(
-        "/tasks/",
-        json={"title": "To Delete", "assigned_to": 1},
-        headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    task_id = created["id"]
+    crt = client.post("/tasks/", json={"title": "To Delete", "assigned_to": 1},
+                      headers={"Authorization": f"Bearer {auth_token}"})
+    tid = crt.json()["id"]
 
-    response = client.delete(
-        f"/tasks/{task_id}",
-        headers={"Authorization": f"Bearer {auth_token}"}
-    )
-    assert response.status_code == 200
-    assert response.json()["message"] == "Task deleted"
+    r = client.delete(f"/tasks/{tid}", headers={"Authorization": f"Bearer {auth_token}"})
+    assert r.status_code == 204  # delete deve ser 204 No Content
+    assert r.content == b""
 
 def test_list_tasks_filtered_route(client, auth_token):
     client.post(
@@ -73,10 +64,9 @@ def test_list_tasks_filtered_route(client, auth_token):
         },
         headers={"Authorization": f"Bearer {auth_token}"}
     )
-
-    response = client.get(
-        f"/tasks/?status=done&priority=high&dueBefore={str(date.today() + timedelta(days=2))}&assignedTo=1",
+    r = client.get(
+        f"/tasks/?status=done&priority=high&dueBefore={str(date.today()+timedelta(days=2))}&assignedTo=1",
         headers={"Authorization": f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert any(t["title"] == "Filtro Tarefa" for t in response.json())
+    assert r.status_code == 200
+    assert any(t["title"] == "Filtro Tarefa" for t in r.json())

@@ -1,57 +1,56 @@
 def test_create_user_route(client, auth_token):
-    response = client.post(
+    r = client.post(
         "/users/",
-        json={
-            "name": "João",
-            "email": "joao@example.com",
-            "password": "joaopass"
-        },
-        headers={"Authorization": f"Bearer {auth_token}"}
+        json={"name":"João","email":"joao@example.com","password":"joaopass"},
+        headers={"Authorization":f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["email"] == "joao@example.com"
+    assert r.status_code == 201  # criação deve retornar 201
+    data = r.json()
+    assert data["email"] == "joao@example.com"
+    assert "id" in data
 
 def test_get_user_route(client, auth_token):
-    created = client.post(
+    cr = client.post(
         "/users/",
-        json={"name": "Lia", "email": "lia@example.com", "password": "xx"},
-        headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    user_id = created["id"]
+        json={"name":"Lia","email":"lia@example.com","password":"xxxx"},
+        headers={"Authorization":f"Bearer {auth_token}"}
+    )
+    assert cr.status_code == 201
+    uid = cr.json()["id"]
 
-    response = client.get(f"/users/{user_id}", headers={"Authorization": f"Bearer {auth_token}"})
-    assert response.status_code == 200
-    assert response.json()["email"] == "lia@example.com"
+    r = client.get(f"/users/{uid}", headers={"Authorization":f"Bearer {auth_token}"})
+    assert r.status_code == 200
+    assert r.json()["email"] == "lia@example.com"
 
 def test_update_user_route(client, auth_token):
-    created = client.post(
+    cr = client.post(
         "/users/",
-        json={"name": "Bruno", "email": "bruno@example.com", "password": "b"},
-        headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    user_id = created["id"]
-    response = client.put(
-        f"/users/{user_id}",
-        json={"name": "Bruno Alterado"},
-        headers={"Authorization": f"Bearer {auth_token}"}
+        json={"name":"Bruno","email":"bruno@example.com","password":"bbbb"},
+        headers={"Authorization":f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["name"] == "Bruno Alterado"
+    assert cr.status_code == 201
+    uid = cr.json()["id"]
+
+    r = client.put(
+        f"/users/{uid}",
+        json={"name":"Bruno Alterado"},
+        headers={"Authorization":f"Bearer {auth_token}"}
+    )
+    assert r.status_code == 200
+    assert r.json()["name"] == "Bruno Alterado"
 
 def test_delete_user_route(client, auth_token):
-    created = client.post(
+    cr = client.post(
         "/users/",
-        json={"name": "Paula", "email": "paula@example.com", "password": "p"},
-        headers={"Authorization": f"Bearer {auth_token}"}
-    ).json()
-    user_id = created["id"]
-
-    response = client.delete(
-        f"/users/{user_id}",
-        headers={"Authorization": f"Bearer {auth_token}"}
+        json={"name":"Paula","email":"paula@example.com","password":"pppp"},
+        headers={"Authorization":f"Bearer {auth_token}"}
     )
-    assert response.status_code == 200
-    assert response.json()["message"] == "User deactivated"
+    assert cr.status_code == 201
+    uid = cr.json()["id"]
 
-    get_response = client.get(f"/users/{user_id}", headers={"Authorization": f"Bearer {auth_token}"})
-    assert get_response.status_code == 404
+    r = client.delete(f"/users/{uid}", headers={"Authorization":f"Bearer {auth_token}"})
+    assert r.status_code == 204
+    assert r.content == b""
+
+    r2 = client.get(f"/users/{uid}", headers={"Authorization":f"Bearer {auth_token}"})
+    assert r2.status_code == 404
