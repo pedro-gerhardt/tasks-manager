@@ -20,3 +20,25 @@
 2025-06-18 01:03:49,159 | INFO     | src.main | Registrando rotas de tarefa
 2025-06-18 01:03:49,162 | INFO     | src.main | Registrando rotas de autenticação
 2025-06-18 01:03:49,163 | INFO     | src.main | Registrando rotas de comentários
+2025-06-18 01:08:29,942 | INFO     | __main__ | Configuração de logging aplicada
+2025-06-18 01:08:29,943 | INFO     | __main__ | FastAPI app instanciada
+2025-06-18 01:08:29,943 | INFO     | __main__ | Criando tabelas no banco de dados
+2025-06-18 01:08:29,944 | INFO     | __main__ | Registrando rotas de usuário
+2025-06-18 01:08:29,946 | INFO     | __main__ | Registrando rotas de tarefa
+2025-06-18 01:08:29,950 | INFO     | __main__ | Registrando rotas de autenticação
+2025-06-18 01:08:29,951 | INFO     | __main__ | Registrando rotas de comentários
+2025-06-18 01:08:29,958 | INFO     | __main__ | Iniciando servidor Uvicorn
+2025-06-18 01:08:30,671 | INFO     | __mp_main__ | Configuração de logging aplicada
+2025-06-18 01:08:30,671 | INFO     | __mp_main__ | FastAPI app instanciada
+2025-06-18 01:08:30,672 | INFO     | __mp_main__ | Criando tabelas no banco de dados
+2025-06-18 01:08:30,673 | INFO     | __mp_main__ | Registrando rotas de usuário
+2025-06-18 01:08:30,675 | INFO     | __mp_main__ | Registrando rotas de tarefa
+2025-06-18 01:08:30,679 | INFO     | __mp_main__ | Registrando rotas de autenticação
+2025-06-18 01:08:30,680 | INFO     | __mp_main__ | Registrando rotas de comentários
+2025-06-18 01:08:30,718 | INFO     | src.main | Configuração de logging aplicada
+2025-06-18 01:08:30,719 | INFO     | src.main | FastAPI app instanciada
+2025-06-18 01:08:30,719 | INFO     | src.main | Criando tabelas no banco de dados
+2025-06-18 01:08:30,720 | INFO     | src.main | Registrando rotas de usuário
+2025-06-18 01:08:30,722 | INFO     | src.main | Registrando rotas de tarefa
+2025-06-18 01:08:30,725 | INFO     | src.main | Registrando rotas de autenticação
+2025-06-18 01:08:30,726 | INFO     | src.main | Registrando rotas de comentários
