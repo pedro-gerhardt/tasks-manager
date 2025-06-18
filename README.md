@@ -7,11 +7,14 @@ Uma API RESTful para gerenciamento de tarefas, comentários e usuários, com aut
 ## Índice
 
 - [Visão Geral](#visão-geral)  
-- [Funcionalidades](#funcionalidades)  
+- [Decisões Arquiteturais](#decisões-arquiteturais)  
+- [Modelagem de Dados](#modelagem-de-dados)  
+- [Fluxo de Requisições](#fluxo-de-requisições)  
 - [Tecnologias](#tecnologias)  
 - [Pré-requisitos](#pré-requisitos)  
+- [Dependências](#dependências)  
 - [Instalação](#instalação)  
-- [Configuração](#configuração)  
+- [Configuração e Deploy](#configuração-e-deploy)  
 - [Execução](#execução)  
 - [Endpoints](#endpoints)  
   - [Autenticação](#autenticação)  
@@ -20,7 +23,7 @@ Uma API RESTful para gerenciamento de tarefas, comentários e usuários, com aut
   - [Comentários](#comentários)  
 - [Logging](#logging)  
 - [Banco de Dados](#banco-de-dados)  
-- [Testes](#testes)  
+- [Testes Automatizados](#testes-automatizados)  
 - [Contribuição](#contribuição)  
 - [Licença](#licença)  
 
@@ -28,19 +31,86 @@ Uma API RESTful para gerenciamento de tarefas, comentários e usuários, com aut
 
 ## Visão Geral
 
-Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQLAlchemy** e **JWT** para autenticação. Permite criar, listar, atualizar e excluir usuários e tarefas, além de adicionar comentários às tarefas.
+Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQLAlchemy** e **JWT** para autenticação. O objetivo é oferecer uma API simples e robusta para a criação, gerenciamento e acompanhamento de tarefas, com suporte a comentários e permissões básicas de usuário. É indicado para aplicações internas de equipes ou como base para um microserviço de tarefas.
 
 ---
 
-## Funcionalidades
+## Decisões Arquiteturais
 
-- **Autenticação JWT** (login e logout)  
-- **CRUD de Usuários** (create, read, update, soft delete)  
-- **CRUD de Tarefas** (create, read, update, delete, filtros por status/priority/due_date/assigned_to)  
-- **CRUD de Comentários** associados a tarefas  
-- **Logging** estruturado com console e arquivo rotativo  
-- **Validações de negócio** (status e prioridade de tarefas, datas, e-mails únicos)  
-- **Testes automatizados** com pytest  
+- **Arquitetura em Camadas**: separação clara entre *routers*, *controllers*, *models* e *utils*, facilitando manutenção e testes.  
+- **FastAPI + Pydantic**: validação automática de payloads e geração de documentação Swagger.  
+- **SQLAlchemy ORM**: mapeamento objeto-relacional para flexibilidade no uso de bancos SQL.  
+- **JWT Stateless**: autenticação sem sessão, escalonável para múltiplos nós.  
+- **Logging Estruturado**: handlers de console e arquivo com rotação diária, permitindo auditoria e monitoramento.  
+- **Princípios de Clean Architecture**: dependências unidirecionais e separação de responsabilidades.
+
+---
+
+## Modelagem de Dados
+
+Entidades principais e seus relacionamentos:
+
+```
+Users
+  ├─ id (PK, int)
+  ├─ name (str)
+  ├─ email (str, unique)
+  ├─ hashed_password (str)
+  ├─ is_active (bool)
+  └─ created_at (datetime)
+
+Tasks
+  ├─ id (PK, int)
+  ├─ title (str)
+  ├─ description (str, opcional)
+  ├─ due_date (date, opcional)
+  ├─ priority (enum: low, medium, high)
+  ├─ status (enum: pending, in_progress, done)
+  ├─ assigned_to (FK -> users.id, opcional)
+  ├─ created_at (datetime)
+  └─ updated_at (datetime)
+
+Comments
+  ├─ id (PK, int)
+  ├─ content (str)
+  ├─ task_id (FK -> tasks.id)
+  ├─ user_id (FK -> users.id)
+  └─ created_at (datetime)
+```
+
+---
+
+## Fluxo de Requisições
+
+Exemplos de uso dos principais endpoints:
+
+1. **Login e obtenção de token**  
+   ```bash
+   curl -X POST http://localhost:8000/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"user@test.com","password":"pass"}'
+   ```
+
+2. **Criação de usuário**  
+   ```bash
+   curl -X POST http://localhost:8000/users/ \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Alice","email":"alice@test.com","password":"123456"}'
+   ```
+
+3. **Criação de tarefa**  
+   ```bash
+   curl -X POST http://localhost:8000/tasks/ \
+     -H "Authorization: Bearer <TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{"title":"Implement feature X","due_date":"2025-07-01","priority":"medium"}'
+   ```
+
+4. **Listagem de tarefas de um usuário**  
+   ```bash
+   curl http://localhost:8000/tasks/?assigned_to=1 \
+     -H "Authorization: Bearer <TOKEN>"
+   ```
 
 ---
 
@@ -49,30 +119,29 @@ Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQL
 - Python 3.10+  
 - FastAPI  
 - SQLAlchemy  
-- SQLite (ou outro banco configurável)  
-- passlib (bcrypt) para hashing de senhas  
-- PyJWT para tokens JWT  
-- Uvicorn como servidor ASGI  
-- pytest para testes  
+- Pydantic  
+- passlib (bcrypt)  
+- PyJWT  
+- Uvicorn  
+- pytest  
 
 ---
 
 ## Pré-requisitos
 
 - Git  
-- Python 3.10+ 
+- Python 3.10 ou superior  
+- Ambiente virtual (venv, virtualenv ou conda)  
 
 ---
 
 ## Dependências
 
-Instale as bibliotecas necessárias via pip:
-
 ```bash
-pip install fastapi uvicorn sqlalchemy pydantic passlib[bcrypt] PyJWT pytest
+pip install fastapi uvicorn[standard] sqlalchemy pydantic passlib[bcrypt] PyJWT pytest
 ```
 
-Se preferir, crie um arquivo `requirements.txt` com:
+Ou via `requirements.txt`:
 
 ```
 fastapi
@@ -84,37 +153,32 @@ PyJWT
 pytest
 ```
 
-E instale com:
+---
+
+## Instalação
 
 ```bash
+git clone https://github.com/seu-usuario/tasks-manager.git
+cd tasks-manager
 pip install -r requirements.txt
 ```
 
 ---
 
-## Instalação
-
-1. Clone o repositório:  
-   ```bash
-   git clone https://github.com/seu-usuario/tasks-manager.git
-   cd tasks-manager
-   ```
-
-2. Instale as dependências:  
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## Configuração
+## Configuração e Deploy
 
 - **Variáveis de ambiente**  
-  - `JWT_SECRET`: chave secreta para geração de tokens (padrão: `supersecret`)  
-  - `DATABASE_URL`: URL de conexão SQLAlchemy (padrão: `sqlite:///./app.db`)  
-
-- **Logs**  
-  A pasta `logs/` é criada automaticamente na primeira execução e contém `app.log` rotacionado diariamente.
+  - `JWT_SECRET`: chave secreta para tokens (padrão: `supersecret`)  
+  - `DATABASE_URL`: string de conexão SQLAlchemy (padrão: `sqlite:///./app.db`)  
+- **Diretório de logs**: criado automaticamente (`logs/`)  
+- **Deploy**: use Uvicorn ou Docker conforme sua infraestrutura. Exemplo com Docker:
+  ```dockerfile
+  FROM python:3.10-slim
+  WORKDIR /app
+  COPY . .
+  RUN pip install -r requirements.txt
+  CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
+  ```
 
 ---
 
@@ -123,8 +187,11 @@ pip install -r requirements.txt
 ```bash
 python -m src.main
 ```
-
-O servidor ficará disponível em `http://localhost:8000/docs`.
+Ou:
+```bash
+uvicorn src.main:app --reload
+```
+Acesse: `http://localhost:8000/docs`
 
 ---
 
@@ -132,91 +199,77 @@ O servidor ficará disponível em `http://localhost:8000/docs`.
 
 ### Autenticação
 
-| Método | Rota           | Descrição                     | Corpo / Query                         |
-| ------ | -------------- | ----------------------------- | ------------------------------------- |
-| POST   | `/auth/login`  | Autentica e obtém token JWT   | `{ "username": "...", "password": "..." }` |
-| GET    | `/auth/logout` | Logout (endpoint simulado)    | —                                     |
+| Método | Rota           | Descrição                   |
+| ------ | -------------- | --------------------------- |
+| POST   | `/auth/login`  | Gera token JWT              |
+| GET    | `/auth/logout` | Logout (mock)               |
 
 ### Usuários
 
-| Método | Rota                 | Descrição                           | Corpo                                   |
-| ------ | -------------------- | ----------------------------------- | --------------------------------------- |
-| POST   | `/users/`            | Cria novo usuário                   | `{ "name": "", "email": "", "password": "" }` |
-| GET    | `/users/{user_id}`   | Obtém dados de um usuário ativo     | —                                       |
-| PUT    | `/users/{user_id}`   | Atualiza nome, e-mail ou senha      | `{ "name"?, "email"?, "password"? }`    |
-| DELETE | `/users/{user_id}`   | Desativa usuário (soft delete)      | —                                       |
+| Método | Rota                | Descrição                      |
+| ------ | ------------------- | ------------------------------ |
+| POST   | `/users/`           | Cria usuário                  |
+| GET    | `/users/{user_id}`  | Recupera usuário ativo        |
+| PUT    | `/users/{user_id}`  | Atualiza usuário              |
+| DELETE | `/users/{user_id}`  | Desativa usuário (soft delete)|
 
 ### Tarefas
 
-| Método | Rota                         | Descrição                                     | Corpo / Query                                   |
-| ------ | ---------------------------- | --------------------------------------------- | ----------------------------------------------- |
-| POST   | `/tasks/`                    | Cria nova tarefa                              | `{ "title": "", "due_date"?, "priority"?, "status"?, "assigned_to"? }` |
-| GET    | `/tasks/{task_id}`           | Obtém uma tarefa por ID                       | —                                               |
-| GET    | `/tasks/?assigned_to={user}` | Lista tarefas de um usuário                   | —                                               |
-| PUT    | `/tasks/{task_id}`           | Atualiza campos de uma tarefa                 | `{ "title"?, "due_date"?, "priority"?, "status"?, "assigned_to"? }` |
-| DELETE | `/tasks/{task_id}`           | Remove tarefa                                 | —                                               |
-| GET    | `/tasks/filter?...`          | Filtra por status, prioridade, due_before, user_id | Query params: `status`, `priority`, `due_before`, `user_id` |
+| Método | Rota                        | Descrição                                    |
+| ------ | --------------------------- | -------------------------------------------- |
+| POST   | `/tasks/`                   | Cria nova tarefa                             |
+| GET    | `/tasks/{task_id}`          | Recupera tarefa por ID                       |
+| GET    | `/tasks/?assigned_to={id}`  | Lista tarefas de um usuário                  |
+| PUT    | `/tasks/{task_id}`          | Atualiza tarefa                              |
+| DELETE | `/tasks/{task_id}`          | Deleta tarefa                                |
+| GET    | `/tasks/filter?...`         | Filtra tarefas por status, prioridade, etc.  |
 
 ### Comentários
 
-| Método | Rota                                          | Descrição                       | Corpo                                 |
-| ------ | --------------------------------------------- | ------------------------------- | ------------------------------------- |
-| POST   | `/tasks/{task_id}/comments`                  | Cria comentário em tarefa       | `{ "content": "texto do comentário" }` |
-| GET    | `/tasks/{task_id}/comments`                  | Lista comentários de tarefa     | —                                     |
-| DELETE | `/tasks/{task_id}/comments/{comment_id}`     | Remove comentário autorizado    | —                                     |
+| Método | Rota                                       | Descrição                    |
+| ------ | ------------------------------------------ | ---------------------------- |
+| POST   | `/tasks/{task_id}/comments`               | Adiciona comentário          |
+| GET    | `/tasks/{task_id}/comments`               | Lista comentários           |
+| DELETE | `/tasks/{task_id}/comments/{comment_id}`  | Remove comentário           |
 
 ---
 
 ## Logging
 
-- **Console**: nível `DEBUG`  
-- **Arquivo** (`logs/app.log`): nível `INFO`, rotacionado diariamente, 7 backups  
-- **Formato**:  
-  ```
-  2025-06-18 12:34:56 | INFO     | task_controller | Tarefa criada com sucesso: ID=42
-  ```
-
-Use ferramentas como `tail -F logs/app.log`, `grep`, ou lnav para inspeção interativa.
+- Console: nível `DEBUG`  
+- Arquivo (`logs/app.log`): nível `INFO`, rotação diária, 7 backups  
+- Formato:
+```
+2025-06-18 12:34:56 | INFO     | task_controller | ...
+```
 
 ---
 
 ## Banco de Dados
 
-Por padrão usa SQLite (`./app.db`). Para trocar:
+Por padrão SQLite (`./app.db`). Para trocar:
 
 ```bash
 export DATABASE_URL="postgresql://user:pass@host:port/dbname"
 ```
 
-O SQLAlchemy criará tabelas automaticamente no startup.
-
 ---
 
-## Testes
+## Testes Automatizados
 
-Execute toda a suíte com:
-
-```bash
-pytest --maxfail=1 --disable-warnings -q
-```
-
-Testes de controllers, modelos e rotas estão em `tests/`.
-
-Para verificar a cobertura e demais testes execute:
-
-```bash
-pytest --cov=src tests/
-```
+- **Framework**: pytest com fixtures e mocks  
+- **Cobertura**: uso de `pytest --cov=src`, meta mínima de 80%  
+- Testes em `tests/`, abrangendo controllers, modelos e rotas.
 
 ---
 
 ## Contribuição
 
 1. Fork do repositório  
-2. Crie uma branch feature: `git checkout -b feature/nome`  
-3. Commit suas mudanças: `git commit -m "descrição"`  
+2. Branch feature: `git checkout -b feature/nome`  
+3. Commit: `git commit -m "descrição"`  
 4. Push: `git push origin feature/nome`  
-5. Abra um Pull Request  
+5. Pull Request  
 
 ---
 
