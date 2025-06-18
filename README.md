@@ -37,12 +37,38 @@ Este projeto implementa um sistema de **Task Manager** usando **FastAPI**, **SQL
 
 ## Decisões Arquiteturais
 
-- **Arquitetura em Camadas**: separação clara entre *routers*, *controllers*, *models* e *utils*, facilitando manutenção e testes.  
-- **FastAPI + Pydantic**: validação automática de payloads e geração de documentação Swagger.  
-- **SQLAlchemy ORM**: mapeamento objeto-relacional para flexibilidade no uso de bancos SQL.  
-- **JWT Stateless**: autenticação sem sessão, escalonável para múltiplos nós.  
-- **Logging Estruturado**: handlers de console e arquivo com rotação diária, permitindo auditoria e monitoramento.  
-- **Princípios de Clean Architecture**: dependências unidirecionais e separação de responsabilidades.
+Para organizar o código de forma clara e escalável, adotamos o **padrão MVC (Model‑View‑Controller)**:
+
+- **Models** (`src/models/`): definem entidades e schemas de dados com SQLAlchemy e Pydantic.  
+- **Views** (`src/views/`): mapeiam rotas e definem endpoints de API baseados em FastAPI.  
+- **Controllers** (`src/controllers/`): encapsulam a lógica de negócio, validam dados e interagem com o banco.  
+- **Utils** (`src/controllers/utils.py`): componentes auxiliares, como a fábrica de sessões de banco.
+
+### Justificativas de escolhas
+
+- **FastAPI + Pydantic**:  
+  - Validação automática de payloads e documentação interativa (Swagger UI)  
+  - Alto desempenho e baixo overhead, ideal para microserviços.
+
+- **SQLite como banco padrão** (`sql_app.db`):  
+  - **Leve e embutido**, sem necessidade de servidor separado, facilitando setup local e testes.  
+  - Confiável para aplicativos de pequeno a médio porte; pode ser substituído por PostgreSQL/MySQL via variável `DATABASE_URL`.
+
+- **SQLAlchemy ORM**:  
+  - Flexibilidade para usar diferentes bancos relacionais com mínima mudança de código  
+  - Suporte a migrations futuras e mapeamento objeto-relacional robusto.
+
+- **JWT Stateless Authentication**:  
+  - Autenticação sem estado no servidor, escalável para múltiplas instâncias da aplicação  
+  - JWT simplifica a configuração em ambientes distribuídos.
+
+- **Logging estruturado**:  
+  - Handlers de console e arquivo com rotação diária (pasta `logs/`)  
+  - Níveis de log configuráveis (`DEBUG`, `INFO`, `WARNING`, `ERROR`), permitindo monitoramento e auditoria.
+
+- **Clean Architecture (camadas desacopladas)**:  
+  - Dependência unidirecional: *views* → *controllers* → *models* → *database*  
+  - Facilita testes automatizados, manutenção e evolução independente de componentes.
 
 ---
 
@@ -66,15 +92,15 @@ Tasks
   ├─ due_date (date, opcional)
   ├─ priority (enum: low, medium, high)
   ├─ status (enum: pending, in_progress, done)
-  ├─ assigned_to (FK -> users.id, opcional)
+  ├─ assigned_to (FK → users.id, opcional)
   ├─ created_at (datetime)
   └─ updated_at (datetime)
 
 Comments
   ├─ id (PK, int)
   ├─ content (str)
-  ├─ task_id (FK -> tasks.id)
-  ├─ user_id (FK -> users.id)
+  ├─ task_id (FK → tasks.id)
+  ├─ user_id (FK → users.id)
   └─ created_at (datetime)
 ```
 
